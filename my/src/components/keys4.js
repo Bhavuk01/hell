@@ -1,4 +1,4 @@
-const keys = [
+const keys4 = [
     'A1B2C3', 'D4E5F6', 'G7H8I9', 'J0K1L2', 'M3N4O5', 
     'P6Q7R8', 'S9T0U1', 'V2W3X4', 'Y5Z6A7', 'B8C9D0', 
     'E1F2G3', 'H4I5J6', 'K7L8M9', 'N0O1P2', 'Q3R4S5', 
@@ -16,8 +16,9 @@ const keys = [
     'C1D2E3', 'F4G5H6', 'I7J8K9', 'L0M1N2', 'O3P4Q5', 
     'R6S7T8', 'U9V0W1', 'X2Y3Z4', 'A5B6C7', 'D8E9F0', 
     'G1H2I3', 'J4K5L6', 'M7N8O9', 'P0Q1R2', 'S3T4U5', 
-    'V6W7X8', 'Y9Z0A1', 'B2C3D4', 'E5F6G7', 'H8I9J0'
+    'V6W7X8', 'Y9Z0A1', 'B2C3D4', 'E5F6G7', 'H8I9J0', 
+    'K1L2M3', 'N4O5P6', 'Q7R8S9', 'T0U1V2', 'W3X4Y5', 
+    'Z6A7B8', 'C9D0E1', 'F2G3H4', 'I5J6K7', 'L8M9N0'
 ];
 
-
-export default keys;
+export default keys4;

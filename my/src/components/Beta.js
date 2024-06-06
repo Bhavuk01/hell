@@ -11,6 +11,7 @@ const App = () => {
   const [revealedCells, setRevealedCells] = useState([]);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [warningShown, setWarningShown] = useState(false); // Added state for warning
+  const [expirationTime, setExpirationTime] = useState(null);
 
   useEffect(() => {
     const loggedIn = sessionStorage.getItem('loggedIn');
@@ -25,17 +26,21 @@ const App = () => {
       setIsDemoUser(demoUser === 'true');
     }
 
-    const expirationTime = sessionStorage.getItem('expirationTime');
-    if (expirationTime) {
+    // Retrieve expiration time and update the state
+    const storedExpirationTime = sessionStorage.getItem('expirationTime');
+    if (storedExpirationTime) {
       const interval = setInterval(() => {
-        const timeLeft = calculateTimeLeft(expirationTime);
+        const currentTime = new Date().getTime();
+        const timeLeft = calculateTimeLeft(storedExpirationTime);
         if (timeLeft <= 0) {
-          sessionStorage.removeItem('loggedIn');
-          window.location.href = '/';
+          clearInterval(interval);
+          handleLogout();
         } else {
           setTimeLeft(formatTimeLeft(timeLeft));
         }
       }, 1000);
+
+      setExpirationTime(storedExpirationTime);
       return () => clearInterval(interval);
     }
   }, []);
@@ -53,6 +58,7 @@ const App = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem('loggedIn');
+    sessionStorage.removeItem('expirationTime');
     window.location.href = '/';
   };
 
@@ -95,10 +101,6 @@ const App = () => {
     alert('Congratulations! You have made a profit.');
     window.location.reload(); // Refresh the page
   };
-
-  if (!isLoggedIn) {
-    return null;
-  }
 
   return (
     <div className="container">
@@ -156,4 +158,3 @@ const App = () => {
 };
 
 export default App;
-

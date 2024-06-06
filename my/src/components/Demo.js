@@ -1,11 +1,11 @@
+
 import React, { useEffect, useState } from 'react';
-import hloSvg from './hlo.svg';
+import hlo from './hlo.svg';
 import './demo.css';  // Make sure to include your CSS file for styling
 import './Login';
 
 const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [timeLeft, setTimeLeft] = useState('');
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
   const [cellNumber, setCellNumber] = useState('');
   const [clientSeed, setClientSeed] = useState('');
   const [revealedCells, setRevealedCells] = useState([]);
@@ -13,46 +13,23 @@ const App = () => {
   const [warningShown, setWarningShown] = useState(false);
 
   useEffect(() => {
-    const loggedIn = sessionStorage.getItem('loggedIn');
-    const demoUser = sessionStorage.getItem('demouser');
-
-    if (!loggedIn) {
-      window.location.href = '/';
-    } else if (demoUser === 'false' && loggedIn === 'true') {
-      window.location.href = 'Demo';
-    } else {
-      setIsLoggedIn(true);
-    }
-
-    const expirationTime = sessionStorage.getItem('expirationTime');
-    if (expirationTime) {
-      const interval = setInterval(() => {
-        const timeLeft = calculateTimeLeft(expirationTime);
-        if (timeLeft <= 0) {
-          sessionStorage.removeItem('loggedIn');
-          window.location.href = '/';
-        } else {
-          setTimeLeft(formatTimeLeft(timeLeft));
+    const interval = setInterval(() => {
+      setTimeLeft((prevTime) => {
+        if (prevTime <= 0) {
+          clearInterval(interval);
+          return 0;
         }
-      }, 1000);
-      return () => clearInterval(interval);
-    }
+        return prevTime - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
   }, []);
 
-  const calculateTimeLeft = (expirationTime) => {
-    const currentTime = new Date().getTime();
-    return expirationTime - currentTime;
-  };
-
-  const formatTimeLeft = (timeLeft) => {
-    const minutes = Math.floor(timeLeft % (1000 * 60 * 60) / (1000 * 60));
-    const seconds = Math.floor(timeLeft % (1000 * 60) / 1000);
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
     return `${minutes}m ${seconds}s`;
-  };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem('loggedIn');
-    window.location.href = '/';
   };
 
   const handleRevealMine = () => {
@@ -95,20 +72,21 @@ const App = () => {
     handleRevealMine();
   };
 
+  const handleLogout = () => {
+    sessionStorage.removeItem('loggedIn');
+    window.location.href = '/';
+  };
+
   const handleStop = () => {
     alert('You have stopped the game. Congratulations! You have made a profit! ');
     window.location.reload(); // Refresh the page
   };
 
-  if (!isLoggedIn) {
-    return null;
-  }
-
   return (
     <div className="container">
       <h1>Mine Game</h1>
       <button className="logout-button" onClick={handleLogout}>Logout</button>
-      <div className="timer">Session Expires In: <span>{timeLeft}</span></div>
+      <div className="timer">Session Expires In: <span>{formatTime(timeLeft)}</span></div>
       <div className="info-text">
         <marquee>Please read provided strategy. We recommend using only one mine and placing low bets. If you take risks and do not follow our strategy, you may lose your money, and we are not responsible for any losses incurred.</marquee>
       </div>
@@ -140,7 +118,7 @@ const App = () => {
           {Array.from({ length: 25 }).map((_, index) => (
             <div key={index} className={`minecell ${revealedCells.includes(index) ? 'revealed' : ''}`}>
               {revealedCells.includes(index) && (
-                <img src={hloSvg} alt="Mine" height="50px" className="reveal-animation" />
+                <img src={hlo} alt="Mine" height="50px" className="reveal-animation" />
               )}
             </div>
           ))}

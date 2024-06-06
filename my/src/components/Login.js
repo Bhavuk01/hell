@@ -17,24 +17,46 @@ const Login = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-
-    // Check if the password matches the demo key
-    if (password === 'demotesting') {
-      sessionStorage.setItem('loggedIn', 'true');
-      sessionStorage.setItem('demouser', 'true');
-      // Start the timer for 10 minutes
-      startTimer(10 * 60);
-      window.location.href = 'Demo';
+  
+    let usedPasswords = JSON.parse(sessionStorage.getItem('usedPasswords')) || {};
+    const userId = sessionStorage.getItem('userId') || 'defaultUserId'; // Assuming user ID for tracking purposes
+  
+    // Check if the password has been used before for this user
+    if (usedPasswords[userId] && usedPasswords[userId].includes("demotesting")) {
+      window.location.href = '/'; // Redirect to root page if "demotesting" is used before
       return;
     }
-
+  
+    // Check if the password matches "demotesting" and mark it as used for this user
+    if (password === 'demotesting') {
+      // Initialize the user key if not already present
+      if (!usedPasswords[userId]) {
+        usedPasswords[userId] = [];
+      }
+  
+      usedPasswords[userId].push("demotesting"); // Store the password used
+  
+      sessionStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
+      sessionStorage.setItem('loggedIn', 'true');
+      window.location.href = 'Demo'; // Redirect to Demo page
+      return;
+    }
+  
     // Check if the password matches any key in the keys.js file
     if (keys.includes(password)) {
       sessionStorage.setItem('loggedIn', 'true');
-      window.location.href = 'Beta';
+  
+      // Initialize the user key if not already present
+      if (!usedPasswords[userId]) {
+        usedPasswords[userId] = [];
+      }
+  
+      usedPasswords[userId].push(password); // Store the password used
+      sessionStorage.setItem('usedPasswords', JSON.stringify(usedPasswords));
+      window.location.href = 'Beta'; // Redirect to Beta page
       return;
     }
-
+  
     // Handle case when the entered key is not valid
     alertWithLink('Invalid Key. Please try again.');
   };
